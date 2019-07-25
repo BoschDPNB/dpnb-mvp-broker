@@ -19,7 +19,7 @@ export class UserStatisticsComponent implements OnInit {
   capa_obj: {};
   capacities: Capacity[];
   capaSubscription: Subscription;
-  machines: String[];
+  categories: String[]; //trucks or machines
 
   constructor(
     private authService: AuthService,
@@ -33,6 +33,9 @@ export class UserStatisticsComponent implements OnInit {
     LARGE_SIMPLEX: "Großer 3D-Drucker, Einfarbig",
     LARGE_DUPLEX: "Großer 3D-Drucker, Zweifarbig",
     LARGE_SUPPORT: "Großer 3D-Drucker, Mit Stützmaterial",
+    PKW_CADDY:"PKW Caddy",
+    _7T_FAHRZEUG:"LKW 7,5to",
+    _40T_FAHRZEUG:"LKW 40to",
   }
   
   ngOnInit() {
@@ -41,21 +44,26 @@ export class UserStatisticsComponent implements OnInit {
       this.userSubscription = this.authService.userSubject.subscribe(
         (user: User) => {
           this.loggedUser = user;
-          this.machines = user.machines;
+          if(user.role=="production"){
+            this.categories=user.machines;
+          }
+          else{
+            this.categories=user.trucks;
+          }
         }
       );
       this.authService.emitUserSubject();
     };
     let k=0;
-    while (this.machines[k]){
-      console.log("init " , this.machines[k] );
-    this.authService.getUserCapacities(this.machines[k]);
+    while (this.categories[k]){
+      console.log("init " , this.categories[k] );
+    this.authService.getUserCapacities(this.categories[k]);
     this.capa_obj={};
     if(this.authService.getActualUserCapacities()){
       this.capaSubscription = this.authService.capacitiesSubject.subscribe(
         (capa: Capacity[]) => {
           this.capacities = capa;
-          this.capa_obj[this.machines[k]]=capa;
+          this.capa_obj[this.categories[k]]=capa;
       });
       
       this.authService.emitCapaSubject();
