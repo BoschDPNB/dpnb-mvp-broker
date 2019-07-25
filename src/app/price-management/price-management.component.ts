@@ -72,6 +72,24 @@ export class PriceManagementComponent implements OnInit {
   }
   }
 
+  onSubmitMaterialPrice(materialKost){
+    const matPrice=materialKost.value;
+    const id = this.loggedUser['id'];
+    this.httpClient
+      .put('https://dpnb-broker.firebaseio.com/capacities/'+id+'/material_cost.json', matPrice)
+      .subscribe(
+        (val) => {
+          console.warn('Your data have been submitted', matPrice);
+        },
+        error => {
+          console.log('Erreur ! : ' + error);
+        },
+        () =>{
+          console.log('Data saved');
+        },
+      ); 
+  }
+  
   onSubmitDiscounts(priceData, k){//k is the index of the machine / truck in categories
     
     const newDiscounts = {
