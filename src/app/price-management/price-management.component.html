@@ -3,13 +3,14 @@
 
 <div *ngIf="loggedUser else default" class="frame">  
 
-  
-
+  <div *ngFor="let item of categories; let k=index" class="borderBottom">
+    <h3>{{ categories[k] }} </h3>
 
     <div class="inline onLeft">
       <label for="preis" class="onTheLeft">Standardpreis <span *ngIf="loggedUser.role=='production' else transportPrice"> (€/Minute) </span> <ng-template #transportPrice> (€/km) </ng-template>: </label>
       <input type="number" class="onTheLeft" id="preis" #preis > 
-      <button type="button" (click)="onSubmitPrice(preis)"> Standardpreis aktualisieren </button>
+      <button type="button" (click)="onSubmitPrice(preis, k)"> Standardpreis aktualisieren </button>
+      <div class="confirmation" id="k">Die Daten wurden gespeichert </div>
     </div>
 
     <div class="inline onLeft"  *ngIf="loggedUser.role=='transport'" >
@@ -18,7 +19,7 @@
       <button type="button" (click)="onSubmitMinPrice(minpreis)"> Minimalpreis aktualisieren </button>
     </div>
 
-  <form [formGroup]="priceManagementForm" (ngSubmit) = "onSubmitDiscounts(priceManagementForm.value)" class="noborder">
+  <form [formGroup]="priceManagementForm" (ngSubmit) = "onSubmitDiscounts(priceManagementForm.value, k)" class="noborder">
     <div formArrayName="discounts">
       <h4> Sonderperioden </h4>
     
@@ -44,13 +45,13 @@
     
 
     <div class="inline onLeft">
-      <button type="button" class="nomargin" (click)="addDiscounts()"> Weitere Zeile </button>
+      <button type="button" class="nomargin" (click)="addDiscounts(k)"> Weitere Zeile </button>
       <button type="submit">Sonderperioden aktualisieren</button>
     </div>
   </form>
   <div>
     <br/> <br/>
-  <button type="button" class="nomargin colorOther" (click)="goToUserStats()"> Zurück zu Lieferanteninformationen </button>
+    <button type="button" class="nomargin colorOther" (click)="goToUserStats()"> Zurück zu Lieferanteninformationen </button>
   </div>
 </div>
 
