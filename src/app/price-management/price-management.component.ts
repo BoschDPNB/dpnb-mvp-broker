@@ -17,7 +17,9 @@ import { Router } from '@angular/router';
 export class PriceManagementComponent implements OnInit {
   loggedUser: User;
   userSubscription: Subscription;
+  public myGroup: FormGroup;
   public priceManagementForm: FormGroup;
+  categories: String[]; //either machines or trucks
 
   constructor(
     private formBuilder: FormBuilder,
@@ -31,7 +33,8 @@ export class PriceManagementComponent implements OnInit {
     const control = <FormArray>this.priceManagementForm.controls['discounts'];
     control.push(this.formBuilder.group({
         date: [''],
-        percentage: ['']
+        percentage: [''],
+        availability: ['']
       }));
   }
 
@@ -41,12 +44,17 @@ export class PriceManagementComponent implements OnInit {
       this.userSubscription = this.authService.userSubject.subscribe(
         (user: User) => {
           this.loggedUser = user;
+          if(user.role=="production"){
+            this.categories=user.machines;
+          }
+          else{
+            this.categories=user.trucks;
+          }
         }
       );
       this.authService.emitUserSubject();
     }
     this.priceManagementForm = this.formBuilder.group({
-     // default_price: [''],
       discounts: this.formBuilder.array([
         this.formBuilder.group({
           date: [''],
@@ -64,14 +72,14 @@ export class PriceManagementComponent implements OnInit {
   }
   }
 
-  onSubmitDiscounts(priceData){
+  onSubmitDiscounts(priceData, k){//k is the index of the machine / truck in categories
     
     const newDiscounts = {
       discounts: this.getDiscounts(priceData),
     };
     const id = this.loggedUser['id'];
     this.httpClient
-      .post('https://dpnb-broker.firebaseio.com/capacities/'+id+'.json', newDiscounts)
+      .post('https://dpnb-broker.firebaseio.com/capacities/'+id+'/'+this.categories[k]+'.json', newDiscounts)
       .subscribe(
         (val) => {
           console.warn('Your data have been submitted', newDiscounts);
@@ -84,19 +92,21 @@ export class PriceManagementComponent implements OnInit {
         },
       );    
 
-    setTimeout(
+    document.getElementById("k").style.display="inline";
+    this.priceManagementForm.reset();
+    /*setTimeout(
       ()=>{
         this.priceManagementForm.reset();
         this.router.navigate(['/user-stats']);
       }, 2000
-    )
+    )*/
   }
 
-  onSubmitPrice(preis){
+  onSubmitPrice(preis, k){ //k is the index of the machine / truck in categories
     const price=preis.value;
     const id = this.loggedUser['id'];
     this.httpClient
-      .put('https://dpnb-broker.firebaseio.com/capacities/'+id+'/default_price.json', price)
+      .put('https://dpnb-broker.firebaseio.com/capacities/'+id+'/'+this.categories[k]+'/default_price.json', price)
       .subscribe(
         (val) => {
           console.warn('Your data have been submitted', price);
@@ -108,11 +118,12 @@ export class PriceManagementComponent implements OnInit {
           console.log('Data saved');
         },
       ); 
-    setTimeout(
+    document.getElementsByClassName("onLeft").style.display="inline";
+    /*setTimeout(
       ()=>{
         this.router.navigate(['/user-stats']);
       }, 2000
-    )
+    )*/
   }
 
   onSubmitMinPrice(minpreis){
@@ -143,15 +154,20 @@ export class PriceManagementComponent implements OnInit {
     let res = [];
     
     for (let a in priceData['discounts']){
-      if((priceData['discounts'][a]['availability'])===false){
+      console.log(priceData['discounts'][a]);
+      if((priceData['discounts'][a]['availability'])===""){
         let  perc= priceData['discounts'][a]['percentage']}
       else{
         let perc =999;
       }
+      if((priceData['discounts'][a]['date'])===""){
+        continue;}
+      else{
         res.push({
           date: priceData['discounts'][a]['date'], 
           percentage: perc,
         })
+      }
     }
     return res;
   }
