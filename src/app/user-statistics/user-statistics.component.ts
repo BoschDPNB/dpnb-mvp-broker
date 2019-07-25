@@ -16,34 +16,53 @@ export class UserStatisticsComponent implements OnInit {
 //  @Input() supplierId : string;
   loggedUser: User;
   userSubscription: Subscription;
+  capa_obj: {};
   capacities: Capacity[];
   capaSubscription: Subscription;
+  machines: String[];
 
   constructor(
     private authService: AuthService,
     private router: Router,
   ) { }
-
+  
+  machine_eq={
+    SMALL_SIMPLEX: "Kleiner 3D-Drucker, Einfarbig",
+    SMALL_DUPLEX: "Kleiner 3D-Drucker, Zweifarbig",
+    SMALL_SUPPORT: "Kleiner 3D-Drucker, Mit Stützmaterial",
+    LARGE_SIMPLEX: "Großer 3D-Drucker, Einfarbig",
+    LARGE_DUPLEX: "Großer 3D-Drucker, Zweifarbig",
+    LARGE_SUPPORT: "Großer 3D-Drucker, Mit Stützmaterial",
+  }
+  
   ngOnInit() {
     if(this.authService.getActualUser()){
       //console.log(this.authService.getActualUser());
       this.userSubscription = this.authService.userSubject.subscribe(
         (user: User) => {
           this.loggedUser = user;
+          this.machines = user.machines;
         }
       );
       this.authService.emitUserSubject();
     };
-    this.authService.getUserCapacities();
+    let k=0;
+    while (this.machines[k]){
+      console.log("init " , this.machines[k] );
+    this.authService.getUserCapacities(this.machines[k]);
+    this.capa_obj={};
     if(this.authService.getActualUserCapacities()){
       this.capaSubscription = this.authService.capacitiesSubject.subscribe(
         (capa: Capacity[]) => {
           this.capacities = capa;
+          this.capa_obj[this.machines[k]]=capa;
       });
       
       this.authService.emitCapaSubject();
     };
-    console.log('capa: ',this.capacities);
+    console.log(name, ' capa: ',this.capacities);
+    k++;
+    }
     
   }
 
