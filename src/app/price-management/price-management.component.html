@@ -3,6 +3,13 @@
 
 <div *ngIf="loggedUser else default" class="frame">  
 
+  <div class="borderBottom">
+    <h3> Materialkosten</h3>
+    <label class="onTheLeft"> Preis pro kg (in €):</label>
+    <input type="number" class="onTheLeft" id="materialKost" #materialKost>
+    <button type="button" (click)="onSubmitMaterialPrice(materialKost)"> Materialkosten aktualisieren </button> <br/><br/>
+  </div>
+  
   <div *ngFor="let item of categories; let k=index" class="borderBottom">
     <h3>{{ categories[k] }} </h3>
 
