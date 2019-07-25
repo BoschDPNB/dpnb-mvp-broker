@@ -76,7 +76,7 @@ export class AuthService {
   }
 
 
-  getUserCapacities(){
+  getUserCapacities(name:String){
     let userId = this.actualUser.id;
     const params = new HttpParams().set('orderBy', '"$key"').set('equalTo','"'+userId+'"');
     this.httpClient
@@ -84,18 +84,18 @@ export class AuthService {
       .subscribe(
         (response: Capacity[]) => {
           let discounts: Discount[]=[];
-          for (let elt in response[userId]){
+          for (let elt in response[userId][name]){
             if(elt!="default_price" && elt!="minimumprice"){
-              for(let di in response[userId][elt]["discounts"]){
+              for(let di in response[userId][name][elt]["discounts"]){
                 discounts.push( {
-                  percentage: response[userId][elt]["discounts"][di]["percentage"],
-                  date: response[userId][elt]["discounts"][di]["date"],
+                  percentage: response[userId][name][elt]["discounts"][di]["percentage"],
+                  date: response[userId][name][elt]["discounts"][di]["date"],
                 })     
               }
             }
           }
           this.actualUserCapacities.push({
-            default_price: response[userId]["default_price"],
+            default_price: response[userId][name]["default_price"],
             min_price: response[userId]["minimumprice"],
             discounts: discounts,
           })
