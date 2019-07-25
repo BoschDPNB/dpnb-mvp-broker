@@ -3,7 +3,7 @@
 
 <div *ngIf="loggedUser else default" class="frame">  
 
-  <div class="borderBottom">
+  <div *ngIf="loggedUser.role=='production'" class="borderBottom">
     <h3> Materialkosten</h3>
     <label class="onTheLeft"> Preis pro kg (in €):</label>
     <input type="number" class="onTheLeft" id="materialKost" #materialKost>
