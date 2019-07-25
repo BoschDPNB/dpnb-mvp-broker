@@ -22,7 +22,7 @@ ul{
   list-style-type: none;
   margin: 10px;
   padding-inline-start: 0px;
-
+  clear: left;
 }
 
 ul li a{
