@@ -130,7 +130,7 @@ textarea {
 	text-align:left;
 }
 
-.aufschlag input{
+.aufschlag input[type="text"]{
 	width:20%;
 }
 
@@ -232,3 +232,7 @@ button:hover{
   background-color: rgb(19, 98, 148);
   color: white;
 }
+
+.borderBottom{
+  border-bottom: 1px solid black;
+} 
