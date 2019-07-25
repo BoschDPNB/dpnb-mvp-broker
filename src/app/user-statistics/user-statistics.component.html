@@ -14,7 +14,7 @@
 
   <div class="userPrices">
     <h3>Preis- und Kapazitätsinformationen </h3>
-    <ng-container *ngFor="let mach of machines; let i=index"> 
+    <ng-container *ngFor="let mach of categories; let i=index"> 
       <h4>{{ machine_eq[mach] }}</h4>
     <ng-container *ngFor="let item of capa_obj[mach]" > 
       <span class="higherWeight"> Standardpreis: </span> {{ item.default_price }} <span *ngIf="loggedUser.role=='production' else transportPrice"> €/Minute </span> <ng-template #transportPrice> €/km </ng-template> <br/>
